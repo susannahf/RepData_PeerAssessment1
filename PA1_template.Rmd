@@ -129,8 +129,33 @@ For this part the weekdays() function may be of some help here. Use the dataset 
 
 ### Create factor for weekday and weekend
 
-Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
+```{r factorcode}
+typeofday <- function(dates) {
+  wkday <- weekdays(dates)
+  res <- rep("weekday",length(dates))
+  res[wkday=="Saturday"] <- "weekend"
+  res[wkday=="Sunday"] <- "weekend"
+  res
+}
+
+imputeddata$daytype <- factor(typeofday(imputeddata$posixDate))
+```
 
 ### Panel plot comparing weekdays to weekends
 
-Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). See the README file in the GitHub repository to see an example of what this plot should look like using simulated data.
+```{r panel}
+library(dplyr)
+paneldata <- imputeddata[c("interval","steps","daytype")]
+averagesteps <- paneldata %>% group_by(interval,daytype) %>% summarise(avsteps=mean(steps))
+
+library(ggplot2)
+panplot <- ggplot(averagesteps, aes(interval,avsteps))
+panplot <- panplot + geom_line() + facet_wrap(~daytype,ncol=1) 
+panplot <- panplot + scale_x_continuous(breaks=c(0,400,800,1200,1600,2000,2400),
+     labels=c("00:00","04:00","08:00","12:00","16:00","20:00","00:00"))
+panplot <- panplot + xlab("Time of day (24h clock)") + ylab("Mean number of steps")
+panplot <- panplot + ggtitle("Mean number of steps in 5 minute intervals")
+print(panplot)
+
+```
+
