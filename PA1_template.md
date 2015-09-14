@@ -85,20 +85,55 @@ The number of NAs in the dates is 0, and the number in the intervals is 0.  The 
 
 ### Imputing missing values
 
-I plan to use stochastic imputation.  For each 5 minute interval with missing data, I will calculate the mean and standard deviation of the data within that interval, and then select a random value from a normal distribution.  I will set the seed, so that each time the code is run, I will get the same results.
+I plan to use stochastic imputation.  For each 5 minute interval with missing data, I will calculate the mean and standard deviation of the data within that interval, and then select a random value from a normal distribution.  If the random result is negative, I will report zero as the number of steps.  I will set the seed, so that each time the code is run, I will get the same results.
 
 
 ```r
 set.seed(42)
+# function for imputation: random value from normal, or 0 if value is negative
+myimputation <- function(mu,sigma) { 
+  r <- rnorm(1,mu,sigma)
+  if(r<0) r=0
+  r
+}
+
+# sds for each interval
+intervalstd <- tapply(rawdata$steps, rawdata$interval, sd, na.rm=T)
+
+# create new dataset
+imputeddata <- rawdata
+
+# missing values and corresponding means and sds
+missing <- which(is.na(rawdata$steps))
+missingints <- rawdata$interval[missing]
+missingmeans <- intervalmean[as.character(missingints)]
+missingstds <- intervalstd[as.character(missingints)]
+
+# imputation!
+imputed <- mapply(myimputation,missingmeans,missingstds)
+
+# insert into dataset
+imputeddata$steps[missing] <- imputed
 ```
-
-### New dataset with imputed values
-
-Create a new dataset that is equal to the original dataset but with the missing data filled in.
 
 ### Results with imputed values
 
-Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
+
+```r
+newdaysum <- tapply(imputeddata$steps, imputeddata$date, sum, na.rm=T)
+hist(newdaysum, xlab="Total number of steps taken per day",main="Histogram of daily step totals with imputation")
+```
+
+![](PA1_template_files/figure-html/newresults-1.png) 
+
+```r
+newmeansteps <- mean(newdaysum)
+newmedsteps <- median(newdaysum)
+```
+
+The mean number of steps per day after imputation is 11452.72 steps, and the median is 11458 steps.
+
+As missing data on number of steps was not included in the original totals without imputation, the imputed data tends to increase the total number of steps for days which had missing data.  Therefore the histogram is shifted to the right, and both the mean and median have increased.
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
