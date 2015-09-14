@@ -74,10 +74,23 @@ The interval containing the maximum number of steps is 835.
 
 ### Number of missing values
 
-Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
+
+```r
+stepnas <- sum(is.na(rawdata$steps))
+datenas <- sum(is.na(rawdata$date))
+intervalnas <- sum(is.na(rawdata$interval))
+```
+
+The number of NAs in the dates is 0, and the number in the intervals is 0.  The number of NAs in the step counts is 2304, so this is the number of rows containing missing values.
 
 ### Imputing missing values
-Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
+
+I plan to use stochastic imputation.  For each 5 minute interval with missing data, I will calculate the mean and standard deviation of the data within that interval, and then select a random value from a normal distribution.  I will set the seed, so that each time the code is run, I will get the same results.
+
+
+```r
+set.seed(42)
+```
 
 ### New dataset with imputed values
 

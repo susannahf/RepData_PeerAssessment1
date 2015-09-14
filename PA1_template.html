@@ -115,11 +115,15 @@ maxintname &lt;- names(maxstepsint)</code></pre>
 <h2>Imputing missing values</h2>
 <div id="number-of-missing-values" class="section level3">
 <h3>Number of missing values</h3>
-<p>Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)</p>
+<pre class="r"><code>stepnas &lt;- sum(is.na(rawdata$steps))
+datenas &lt;- sum(is.na(rawdata$date))
+intervalnas &lt;- sum(is.na(rawdata$interval))</code></pre>
+<p>The number of NAs in the dates is 0, and the number in the intervals is 0. The number of NAs in the step counts is 2304, so this is the number of rows containing missing values.</p>
 </div>
 <div id="imputing-missing-values-1" class="section level3">
 <h3>Imputing missing values</h3>
-<p>Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.</p>
+<p>I plan to use stochastic imputation. For each 5 minute interval with missing data, I will calculate the mean and standard deviation of the data within that interval, and then select a random value from a normal distribution. I will set the seed, so that each time the code is run, I will get the same results.</p>
+<pre class="r"><code>set.seed(42)</code></pre>
 </div>
 <div id="new-dataset-with-imputed-values" class="section level3">
 <h3>New dataset with imputed values</h3>
