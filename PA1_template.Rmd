@@ -42,10 +42,54 @@ The mean number of steps per day is `r meansteps` steps, and the median is `r me
 
 ## What is the average daily activity pattern?
 
+### Time series plot
 
+```{r timeplot}
+intervalmean <- tapply(rawdata$steps, rawdata$interval, mean, na.rm=T)
+plot(unique(rawdata$interval),intervalmean,type='l',
+     xlab="Time of day (24h clock)",ylab="Mean number of steps",
+     main="Time series plot of average numbers of steps at different times of day",
+     xlim=c(0,2400),xaxt="n") # suppress x axis to allow custom axis
+# custom axis with 24 hour clock labels
+axis(1,at=c(0,400,800,1200,1600,2000,2400),
+     labels=c("00:00","04:00","08:00","12:00","16:00","20:00","00:00")) 
+```
+
+### Interval with maximum steps
+
+```{r maxsteps}
+maxstepsint <- which(intervalmean==max(intervalmean))
+# the answer has a variable name corresponding to the interval
+maxintname <- names(maxstepsint)
+```
+
+The interval containing the maximum number of steps is `r maxintname`.
 
 ## Imputing missing values
 
+### Number of missing values
 
+Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
+
+### Imputing missing values
+Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
+
+### New dataset with imputed values
+
+Create a new dataset that is equal to the original dataset but with the missing data filled in.
+
+### Results with imputed values
+
+Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+For this part the weekdays() function may be of some help here. Use the dataset with the filled-in missing values for this part.
+
+### Create factor for weekday and weekend
+
+Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
+
+### Panel plot comparing weekdays to weekends
+
+Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). See the README file in the GitHub repository to see an example of what this plot should look like using simulated data.
