@@ -125,8 +125,6 @@ As missing data on number of steps was not included in the original totals witho
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-For this part the weekdays() function may be of some help here. Use the dataset with the filled-in missing values for this part.
-
 ### Create factor for weekday and weekend
 
 ```{r factorcode}
